@@ -31,3 +31,42 @@ instance MyMonad Maybe where
   Nothing >== _ = Nothing
   (Just a) >== f = (f a)
   bad _ = Nothing
+
+foo :: Maybe String
+foo =
+  Just 3 >== (\x ->
+  Just "!" >== (\y ->
+  Just (show x ++ y)))
+
+coolerFoo :: Maybe String
+coolerFoo =
+  do
+    x <- Just 3
+    y <- Just "!"
+    Just (show x ++ y)
+
+instance MyMonad [] where
+  react a = [a]
+  [] >== f = []
+  (x:list) >== f = (f x) ++ (list >== f)
+  bad _ = []
+
+class (MyMonad m) => MyMonadPlus m where
+  mymzero :: m a
+  mymplus :: m a -> m a -> m a
+
+instance MyMonadPlus [] where
+  mymzero = []
+  mymplus = (++)
+
+guard :: (MyMonadPlus m) => Bool -> m ()
+guard True = react ()
+guard False = mymzero
+
+filtered = [1..50] >== (\x -> guard ('7' `elem` show x) >>> return x)
+
+{-
+Interesting and tricky parts:
+1. >>> operator - why it comes with MyMonad class?
+2. do; x <- [1..50] - also tricky and fettered part. Code below that statement will be executed for each element. Need to understand clear relation between `<-` and `>==`
+-}
