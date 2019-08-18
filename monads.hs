@@ -92,9 +92,13 @@ in3 start = do
 canReactIn3 start end = end `elem` in3 start
 
 -- Implement goto function that require start position and end position. Output is most shortest path of combinations from start to dest
-goto :: [KnightMove] -> KnightPos -> [KnightMove]
-goto start dest =  
-  if null filtered then goto (moves start) dest
+
+goto :: KnightPos -> KnightPos -> [KnightMove]
+goto start dest = gotos [[start]] dest
+
+gotos :: [KnightMove] -> KnightPos -> [KnightMove]
+gotos start dest =  
+  if null filtered then gotos (moves start) dest
   else filtered
   where filtered = filter (\move -> (last move) == dest) start
 
@@ -103,9 +107,6 @@ moves [] = []
 moves (x:xs) = getFurtherMoves x ++ moves xs
   where getFurtherMoves = (\move ->
           map (\newPos -> move ++ [newPos]) (moveKnight . last $ move))
-
-
-
 
 {-
 Monad Laws
