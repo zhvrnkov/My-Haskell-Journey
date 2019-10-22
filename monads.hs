@@ -71,6 +71,20 @@ Interesting and tricky parts:
 2. do; x <- [1..50] - also tricky and fettered part. Code below that statement will be executed for each element. Need to understand clear relation between `<-` and `>==`
 -}
 
+-- The `do` notation is just syntactic sugar. This:
+foo :: Maybe String
+foo = do
+  x <- Just 3
+  y <- Just "!"
+  Just (show x + y)
+
+-- will be translated into this:
+foo :: Maybe String
+foo =
+  Just 3   >>= (\x ->
+  Just "!" >>= (\y ->
+  Just (show x + y)))
+
 type KnightPos = (Int, Int)
 type KnightMove = [KnightPos]
 
@@ -122,3 +136,4 @@ or
 
 -- (<==<) :: (MyMonad m) => (b -> m c) -> (a -> m b) -> (a -> m c)
 -- f <==< g = (\x -> g x >== f)
+λ> λ> 
